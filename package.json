@@ -1,0 +1,46 @@
+{
+  "name": "rsc-diagnostics",
+  "version": "0.0.1-pre",
+  "description": "Utilities for diagnosing large RSC payloads",
+  "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/client/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/client/index.js",
+      "types": "./dist/client/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server/index.js",
+      "types": "./dist/server/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "rsc",
+    "react server components",
+    "react"
+  ],
+  "author": "Phil Zona <phil.zona@vercel.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@types/react": "^19.0.1",
+    "chalk": "^4.1.2",
+    "next": "^15.1.0",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.10.2",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
