@@ -14,3 +14,9 @@ dist/
 logs/
 *.log
 pnpm-debug.log*
+
+# Annoying
+.DS_Store
+
+# Generating fetchMonitor.js, do not save
+src/fetchMonitor.js

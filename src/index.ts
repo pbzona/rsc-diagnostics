@@ -1,2 +1,2 @@
-export * from './client'
-export * from './server'
+export { PrefetchDiagnostics } from '@/components/PrefetchDiagnostics';
+export { withClientPropsDiagnostics } from '@/hoc/withClientPropsDiagnostics'

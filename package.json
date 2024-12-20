@@ -7,19 +7,13 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "types": "./dist/client/index.d.ts"
-    },
-    "./client": {
-      "import": "./dist/client/index.js",
-      "types": "./dist/client/index.d.ts"
-    },
-    "./server": {
-      "import": "./dist/server/index.js",
-      "types": "./dist/server/index.d.ts"
+      "types": "./dist/client/index.d.ts",
+      "require": "./dist/index.cjs"
     }
   },
   "scripts": {
     "dev": "tsup --watch",
+    "prebuild": "tsup --tsconfig tsconfig.prebuild.json --config tsup.prebuild.config.ts",
     "build": "tsup",
     "prepublishOnly": "npm run build"
   },
@@ -32,15 +26,14 @@
   "license": "ISC",
   "dependencies": {
     "@types/react": "^19.0.1",
-    "chalk": "^4.1.2",
     "next": "^15.1.0",
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "react-error-boundary": "^4.1.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.10.2",
-    "tsup": "^8.3.5",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "esbuild": "0.24.0",
+    "tsup": "^8.3.5"
   }
 }

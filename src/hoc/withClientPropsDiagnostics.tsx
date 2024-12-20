@@ -1,7 +1,6 @@
-import { estimateBytes } from "@/shared/estimateBytes";
+import { config } from "@/config";
+import { estimateBytes, size } from "@/lib/sizeUtils";
 import React from "react";
-
-const THRESHOLD = 0; // Implement this later
 
 // This should be used on the server to wrap client components
 export function withClientPropsDiagnostics<P extends object>(
@@ -11,15 +10,15 @@ export function withClientPropsDiagnostics<P extends object>(
     for (const [propName, propValue] of Object.entries(props)) {
       const sizeInBytes = estimateBytes(propValue);
 
-      if (sizeInBytes >= THRESHOLD) {
+      if (sizeInBytes >= config.thresholds.prefetchRscSize) {
         console.log(
           `⚠️ Large client component prop in ${WrappedComponent.displayName}`,
         );
-        console.log(`${propName}: ${sizeInBytes.toLocaleString()} B`);
+        console.log(`${propName}: ${size().toFormatted(sizeInBytes)}`);
       }
     }
 
-    // ReactNode can be things other than a component, can't just render this as JSX
+    // ReactNode can be things other than a component, can't just render this as JSX.
     return React.createElement(WrappedComponent, props);
   };
 }

@@ -3,55 +3,78 @@
 > [!CAUTION]
 > This package should *not* be used in your production environment. It is a debugging tool with significant overhead and it is likely to cause performance problems.
 
-This package helps identify excessively large RSC payloads in Next.js. The goal is to avoid situations where users inadvertently DoW (denial of wallet) themselves due to unnecessary bandwidth usage.
+This package helps identify excessively large RSC payloads in Next.js. The goal is to avoid situations where users inadvertently DoW (denial of wallet) themselves due to unnecessary bandwidth usage or degrade performance due to shifting render cycles from the server to the client.
 
 ## What problem does this solve?
 
-When a large RSC payload is sent from the server to the client, it incurs bandwidth usage. This is tricky to detect, especially when you don't have access to the source code. Even when you do, dynamically generated RSC payloads are impossible to predict unless you know exactly what data will be used. Most of the time this comes from an upstream provider (e.g. a CMS) and can be difficult to catch without knowing the possible contents of the response.
+When a large RSC payload is sent from the server to the client, it uses bandwidth just like any other object. This isn't especially difficult to detect, but you have to know what to look for. Even when you do, dynamically generated RSC payloads are impossible to predict unless you know exactly what data will be returned on the server. Most of the time this comes from an upstream provider (e.g. a CMS) and can be difficult to catch without knowing the possible contents of the response.
 
-### What does this not solve?
+### What does it not solve?
 
-It does not diagnose RSC payloads that are dynamically created at runtime.
+This package does *not* resolve issues for you, and does not mitigate the problems it identifies. It is for diagnostics and troubleshooting in a local development environment.
 
-## Structure
+## Usage
 
-The package is divided into two submodules, one to be used on the client and one to be used on the server. The boundary is sort of blurred, but the separation exists to prevent bundling errors on the client as the library evolves.
+Until I settle on a better way to use this package, it is for *local development only*. This is not enforced in the code, but if you instrument your code and deploy it to production, you are responsible for whatever happens to your performance metrics and resource consumption
 
-### Client
+## Components
 
-`<PrefetchDiagnostics/>`
+### `<PrefetchDiagnostics/>`
 
-Render this component to log prefetch requests, which contain an RSC payload.
+Render this component in your root layout to log prefetch requests, which contain an RSC payload.
 
-### Server
+#### Example
 
-#### `withClientPropsDiagnostics`
+```jsx
+import { PrefetchDiagnostics } from 'rsc-diagnostics';
+
+export default function RootLayout({ children }) {
+	return (
+		<html lang="en">
+			<body className={inter.className}>
+				<PrefetchDiagnostics />
+				{children}
+			</body>
+		</html>
+	);
+}
+```
+
+### `withClientPropsDiagnostics`
 
 When rendering a client component from the server (i.e. at the client entrypoint), use this HOC to wrap and export your "real" client component.
 
+Until a codemod is available, you will need to manually edit your client component files. The easiest way to do this without breaking components that use them is to append an underscore to the component's name, then export the wrapped component using its unmodified name.
+
+For better error messages, be sure to set your original component's `displayName`.
+
+#### Example
+
 ```jsx
 'use client';
+import { withClientPropsDiagnostics } from 'rsc-diagnostics';
 
 const MyClientComponent_ = ({ user }) => {
   return <User data={user}/>
 };
 
+MyClientComponent_.displayName = 'MyClientComponent';
+
 export const MyClientComponent = withClientPropsDiagnostics(MyClientComponent_);
 ```
 
-## Implementation
-
-## Further reading
+## Resources
 
 - [Decoding React Server Component Payloads](https://edspencer.net/2024/7/1/decoding-react-server-component-payloads)
 - [The Forensics of React Server Components](https://www.smashingmagazine.com/2024/05/forensics-react-server-components/)
 - [RSC Payload & Serialized Props](https://hrtyy.dev/web/rsc_payload/)
 - [Devtools for React Server Components](https://www.alvar.dev/blog/creating-devtools-for-react-server-components)
 
-## To do
+## To Do
 
-- Align size calculations more closely with actual usage data
+- Make sure estimates are reasonably close to real transfer size
 - Collect data and format into more actionable report
+  - Start a local server and write to DB? Would be cool to be able to track RSC payload metrics over time
 - Automatic component instrumentation
-- RSC parsing and cool data viz; drill down into *why* the payload is large
-  - Map to corresponding chunk via @next/bundle-analyzer???
+- RSC parsing and cool data viz - explain *why* the payload is large
+- Write tests 👼
